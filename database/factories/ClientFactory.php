@@ -12,18 +12,31 @@ require_once __DIR__ . '/../faker_data/document_number.php';
  * Comando Artisan: "php artisan make:factory ClientFactory --model=App\Client"
  * Convenção sufixo Factory e relacionar ao Model(--model=[Model Class])
  */
-$factory->define(Client::class, function (Faker $faker) {
-    $cpfs = cpfs();
-
+$factory->define(Client::class, function (Faker $faker) {    
     return [
         'name' => $faker->name,
-        'document_number' => $cpfs[array_rand(cpfs(), 1)], // array_rand função PHP
         'email' => $faker->email,
         'phone' => $faker->phoneNumber,
-        'defaulter' => rand(0, 1),
+        'defaulter' => rand(0, 1)
+    ];
+});
+
+$factory->state(Client::class, Client::TYPE_INDIVIDUAL, function (Faker $faker) {
+    $cpfs = cpfs();
+    return [
+        'document_number' => $cpfs[array_rand(cpfs(), 1)], // array_rand função PHP
         'date_birth' => $faker->date(),
         'sex' => rand(1, 10) % 2 == 0 ? 'm' : 'f',
         'marital_status' => rand(1, 3),
-        'physical_desability' => rand(1, 10) % 2 == 0 ? $faker->word : null
+        'physical_desability' => rand(1, 10) % 2 == 0 ? true : false
+    ];
+});
+
+$factory->state(Client::class, Client::TYPE_LEGAL, function (Faker $faker) {
+    $cnpjs = cnpjs();
+    return [
+        'document_number' => $cnpjs[array_rand(cnpjs(), 1)],
+        'company_name' => $faker->company,
+        'client_type' => Client::TYPE_LEGAL
     ];
 });
