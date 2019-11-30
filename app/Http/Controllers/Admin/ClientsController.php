@@ -44,9 +44,9 @@ class ClientsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->_validate($request);
-        $data = $request->all();
-        $data['defaulter'] = $request->has('defaulter');
+        $data = $this->_validate($request);
+        $data['defaulter']   = $request->has('defaulter');
+        $data['client_type'] = Client::getClientType($request->client_type);
         Client::create($data);
         // return redirect()->to('/admin/clients'); // Tem o mesmo resultado com código abaixo
         return redirect()->route('clients.index');
@@ -72,16 +72,14 @@ class ClientsController extends Controller
      * uma page 404. Essa forma de passar a instância de acordo com o nome da URI é chamado de 
      * Route Model Binding Implicit
      *
-     * @param  \Illuminate\Http\Request $request
      * @param  object  $client
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Client $client)
+    public function edit(Client $client)
     {
         // Caso retirar o Type Hint no parâmetro, deve-se usar a linha abaixo e terá o mesmo efeito
         // $client = Client::findOrFail($client);
-        $client = Client::find($client->id);
-        $clientType = Client::getClientType($request->client_type);
+        $clientType = $client->client_type;
         return view('admin.clients.edit', compact('client', 'clientType'));
     }
 
@@ -95,8 +93,7 @@ class ClientsController extends Controller
     public function update(Request $request, Client $client) // Route Model Binding Implicit
     {
         $client = Client::find($client->id);
-        $this->_validate($request);
-        $data = $request->all();
+        $data = $this->_validate($request);
         $data['defaulter'] = $request->has('defaulter');
         $client->fill($data);
         $client->save();
@@ -115,19 +112,32 @@ class ClientsController extends Controller
         $client->delete();
         return redirect()->route('clients.index');
     }
-
+    
     protected function _validate(Request $request)
     {
-        $maritalStatus = implode(',', array_keys(Client::MARITAL_STATUS));
-        $this->validate($request, [
+        $clientType = Client::getClientType($request->client_type);
+        $documentNumberType = $clientType == Client::TYPE_INDIVIDUAL ? 'cpf' : 'cnpj';
+        $client = $request->route('client');
+        $clientId = $client instanceof Client ? $client->id : null;
+        $rules = [
             'name'                => 'required|max:255',
-            'document_number'     => 'required',
+            'document_number'     => "required|unique:clients,document_number,$clientId|document_number:$documentNumberType",
             'email'               => 'required|email',
-            'phone'               => 'required',
+            'phone'               => 'required'
+        ];
+        $maritalStatus = implode(',', array_keys(Client::MARITAL_STATUS));
+        $rulesIndividual = [
             'date_birth'          => 'required|date',
             'marital_status'      => "required|in:$maritalStatus",
             'sex'                 => 'required|in:m,f',
             'physical_desability' => 'max:255'
-        ]);
+        ];
+        $rulesLegal = [
+            'company_name'        => 'required|max:255'
+        ];
+        return $this->validate(
+            $request,
+            $clientType == Client::TYPE_INDIVIDUAL ? ($rules + $rulesIndividual) : ($rules + $rulesLegal)
+        );
     }
 }
