@@ -1,6 +1,7 @@
 # Validações e Formulários
+CRUD simples com Route resources, Blade, Migrations, Factory e Seeder.
 
-Para trabalhar com validação de CPF e CNPJ baixar biblioteca code_validater da Code Education
+Para trabalhar com validação de CPF e CNPJ baixar biblioteca code_validater da Code Education.
 
 composer require codeedu/code_validator:0.0.2
 
