@@ -12,7 +12,7 @@ require_once __DIR__ . '/../faker_data/document_number.php';
  * Comando Artisan: "php artisan make:factory ClientFactory --model=App\Client"
  * Convenção sufixo Factory e relacionar ao Model(--model=[Model Class])
  */
-$factory->define(Client::class, function (Faker $faker) {    
+$factory->define(Client::class, function (Faker $faker) {
     return [
         'name'      => $faker->name,
         'email'     => $faker->email,
@@ -28,7 +28,8 @@ $factory->state(Client::class, Client::TYPE_INDIVIDUAL, function (Faker $faker) 
         'date_birth'          => $faker->date(),
         'sex'                 => rand(1, 10) % 2 == 0 ? 'm' : 'f',
         'marital_status'      => rand(1, 3),
-        'physical_desability' => rand(1, 10) % 2 == 0 ? true : false
+        'physical_desability' => rand(1, 10) % 2 == 0 ? true : false,
+        'client_type'         => Client::TYPE_INDIVIDUAL
     ];
 });
 
