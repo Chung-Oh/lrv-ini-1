@@ -1,10 +1,11 @@
-# Validações e Formulários
-CRUD simples com Route resources, Blade, Migrations, Factory e Seeder.
+# Validations and Forms
 
-Para trabalhar com validação de CPF e CNPJ baixar biblioteca code_validater da Code Education.
+Simple CRUD with Route resources, Blade, Migrations, Factory and Seeder.
 
-composer require codeedu/code_validator:0.0.2
+To work with CPF and CNPJ validation download code_validater library from Code Education.
 
-1) Em \App\Providers\AppServiceProvider.php no método boot() registrar a validação
-2) Ir ao arquivo onde está a regra de validação, nesse projeto foi realizado em \App\Http\Controllers\Admin\ClientsController.php
-3) Mensagens de erros \Resources\lang\validation.php
+composer require codeedu / code_validator: 0.0.2
+
+1) In\App\Providers\AppServiceProvider.php in the boot() method register validation
+2) Go to the file where the validation rule is, this project was done in \App\Http\Controllers\Admin\ClientsController.php
+3) Error Messages are in \Resources\lang\validation.php
